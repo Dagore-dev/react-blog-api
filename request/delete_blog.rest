@@ -1,1 +1,8 @@
+### 400
 DELETE http://localhost:3001/blogs/5
+
+### 204 (No blog with this id)
+DELETE http://localhost:3001/blogs/61c9cbe12091b4a48faf27d0
+
+### 204
+DELETE http://localhost:3001/blogs/61c9ed47397403b9dd6f1538

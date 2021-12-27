@@ -7,8 +7,7 @@ Content-Type: application/json
     "author": "Dagore"
 }
 
-###
-
+### 400
 POST http://localhost:3001/blogs
 Content-Type: application/json
 

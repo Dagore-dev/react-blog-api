@@ -1,0 +1,22 @@
+PUT http://localhost:3001/blogs/61c9cbe12091b4a48faf24d0
+Content-Type: application/json
+
+{
+    "body": "Este post está creado siguiendo un esquema a nivel de aplicación. Además lo he modificado con un put."
+}
+
+### 400
+PUT http://localhost:3001/blogs/not-an-id
+Content-Type: application/json
+
+{
+    "body": "Este post está creado siguiendo un esquema a nivel de aplicación. Además lo he modificado con un put."
+}
+
+### 404
+PUT http://localhost:3001/blogs/61c9cfe12091b4a48faf24d0
+Content-Type: application/json
+
+{
+    "body": "Este post está creado siguiendo un esquema a nivel de aplicación. Además lo he modificado con un put."
+}

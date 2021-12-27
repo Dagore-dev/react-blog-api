@@ -1,1 +1,8 @@
-GET http://localhost:3001/blogs/2
+### 200
+GET http://localhost:3001/blogs/61c9cbe12091b4a48faf24d0
+
+### 404
+GET http://localhost:3001/blogs/61c9cbe12091b4a48faf27d0
+
+### 400
+GET http://localhost:3001/blogs/61c9cbe12091b4a48faf24d
