@@ -4,6 +4,8 @@ const express = require('express')
 const logger = require('./loggerMiddleware')
 const cors = require('cors')
 const Blog = require('./models/Blog')
+const notFound = require('./middlewares/notFound')
+const handleErrors = require('./middlewares/handleErrors')
 
 const app = express()
 const PORT = process.env.PORT
@@ -44,7 +46,7 @@ app.get('/blogs/:id', (req, res, next) => {
 
 app.delete('/blogs/:id', (req, res, next) => {
   const { id } = req.params
-  Blog.findByIdAndRemove(id)
+  Blog.findByIdAndDelete(id)
     .then(() => {
       res.status(204).end()
     })
@@ -96,19 +98,10 @@ app.put('/blogs/:id', (req, res, next) => {
     })
 })
 
-app.use((req, res, next) => { // REVISAR NO ESTÁ ENTRANDO
-  res.status(404).json({
-    error: 'Not found'
-  })
-})
+app.use(notFound)
 
-app.use((error, req, res, next) => {
-  console.error(error)
-  if (error.name === 'CastError') {
-    res.status(400).send({ error: 'Used id is malformed' })
-  } else {
-    res.status(500).end()
-  }
-})
+app.use(handleErrors)
 
-app.listen(PORT, () => console.log(`Server running on ${PORT}`))
+const server = app.listen(PORT, () => console.log(`Server running on ${PORT}`))
+
+module.exports = { app, server }
