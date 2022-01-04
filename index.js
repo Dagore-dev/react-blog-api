@@ -14,29 +14,29 @@ app.use(express.json())// body-parser necesario para realizar POST
 app.use(logger)
 app.use(cors())// Cors previene un error que surge cuando se intenta acceder a recursos desde un puerto distinto al de los recursos. Puedes limitar los orígenes que pueden acceder.
 
-app.get('/', (req, res) => {
-  res.send('<h1>Hello world</h1>')
+app.get('/', (request, response) => {
+  response.send('<h1>Hello world</h1>')
 })
 
-app.get('/blogs', (req, res) => {
+app.get('/blogs', (request, response) => {
   Blog.find({})
     .then(blogs => {
-      res.json(blogs)
+      response.json(blogs)
     })
     .catch(err => {
       console.error(err)
     })
 })
 
-app.get('/blogs/:id', (req, res, next) => {
-  const { id } = req.params
+app.get('/blogs/:id', (request, response, next) => {
+  const { id } = request.params
 
   Blog.findById(id)
     .then(blog => {
       if (blog) {
-        res.json(blog)
+        response.json(blog)
       } else {
-        res.status(404).end()
+        response.status(404).end()
       }
     })
     .catch(err => {
@@ -44,19 +44,19 @@ app.get('/blogs/:id', (req, res, next) => {
     })
 })
 
-app.delete('/blogs/:id', (req, res, next) => {
-  const { id } = req.params
+app.delete('/blogs/:id', (request, response, next) => {
+  const { id } = request.params
   Blog.findByIdAndDelete(id)
     .then(() => {
-      res.status(204).end()
+      response.status(204).end()
     })
     .catch(err => {
       next(err)
     })
 })
 
-app.post('/blogs', (req, res) => {
-  const blog = req.body
+app.post('/blogs', (request, response) => {
+  const blog = request.body
 
   if (blog.title && blog.body && blog.author) {
     const newBlog = new Blog({
@@ -67,21 +67,21 @@ app.post('/blogs', (req, res) => {
 
     newBlog.save()
       .then(savedBlog => {
-        res.json(savedBlog)
+        response.json(savedBlog)
       })
       .catch(err => {
         console.error(err)
       })
   } else {
-    res.status(400).json({
+    response.status(400).json({
       error: 'Something is missing'
     })
   }
 })
 
-app.put('/blogs/:id', (req, res, next) => {
-  const { id } = req.params
-  const blog = req.body
+app.put('/blogs/:id', (request, response, next) => {
+  const { id } = request.params
+  const blog = request.body
 
   const newBlogContent = {
     title: blog.title,
@@ -91,7 +91,7 @@ app.put('/blogs/:id', (req, res, next) => {
 
   Blog.findByIdAndUpdate(id, newBlogContent, { new: true })
     .then(blog => {
-      res.json(blog)
+      response.json(blog)
     })
     .catch(err => {
       next(err)
