@@ -1,14 +1,11 @@
 const { server } = require('../index')
 const mongoose = require('mongoose')
 const Blog = require('../models/Blog')
+const initialBlogs = require('./helpers/initialsBlogs')
 const {
-  initialBlogs,
   api,
-  getAllFromBlogs,
-  getTitlesFromBlog,
-  getBodiesFromBlogs,
-  getAuthorsFromBlogs
-} = require('./helpers')
+  getFromBlogs
+} = require('./helpers/getFromBlogs')
 
 describe('blogs', () => {
   beforeEach(async () => {
@@ -28,18 +25,18 @@ describe('blogs', () => {
   })
 
   test('are two', async () => {
-    const { response } = await getAllFromBlogs()
+    const { response } = await getFromBlogs()
     expect(response.body).toHaveLength(initialBlogs.length - 1)
   })
 
   test(`contains title "${initialBlogs[0].title}"`, async () => {
-    const titles = await getTitlesFromBlog()
+    const titles = (await getFromBlogs()).titles()
 
     expect(titles).toContain(`${initialBlogs[0].title}`)
   })
 
   test(`contains author "${initialBlogs[1].author}"`, async () => {
-    const authors = await getAuthorsFromBlogs()
+    const authors = (await getFromBlogs()).authors()
 
     expect(authors).toContain(`${initialBlogs[1].author}`)
   })
@@ -53,7 +50,7 @@ describe('blogs', () => {
       .expect(200)
       .expect('Content-Type', /application\/json/)
 
-    const bodies = await getBodiesFromBlogs()
+    const bodies = (await getFromBlogs()).bodies()
 
     expect(bodies).toContain(newBlog.body)
     expect(bodies).toHaveLength(3)

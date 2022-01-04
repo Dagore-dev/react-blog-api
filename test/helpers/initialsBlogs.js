@@ -1,7 +1,3 @@
-const { app } = require('../index')
-const supertest = require('supertest')
-const api = supertest(app)
-
 const initialBlogs = [
   {
     title: 'Creada con mongoose',
@@ -20,46 +16,4 @@ const initialBlogs = [
   }
 ]
 
-function getBlogs () {
-  return api.get('/blogs')
-}
-
-async function getAllFromBlogs () {
-  const response = await getBlogs()
-
-  const titles = response.body.map(blog => blog.title)
-  const bodies = response.body.map(blog => blog.body)
-  const authors = response.body.map(blog => blog.author)
-
-  return {
-    response,
-    titles,
-    bodies,
-    authors
-  }
-}
-
-async function getTitlesFromBlog () {
-  const { body } = await getBlogs()
-  return body.map(blog => blog.title)
-}
-
-async function getBodiesFromBlogs () {
-  const { body } = await getBlogs()
-  return body.map(blog => blog.body)
-}
-
-async function getAuthorsFromBlogs () {
-  const { body } = await getBlogs()
-  return body.map(blog => blog.author)
-}
-
-module.exports = {
-  initialBlogs,
-  api,
-  getBlogs,
-  getAllFromBlogs,
-  getTitlesFromBlog,
-  getBodiesFromBlogs,
-  getAuthorsFromBlogs
-}
+module.exports = initialBlogs
