@@ -6,6 +6,10 @@ async function getFromBlogs () {
   const response = await api.get('/blogs')
   const body = response.body
 
+  function ids () {
+    return body.map(blog => blog.id)
+  }
+
   function titles () {
     return body.map(blog => blog.title)
   }
@@ -20,6 +24,7 @@ async function getFromBlogs () {
 
   return {
     response,
+    ids,
     titles,
     bodies,
     authors

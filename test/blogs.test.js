@@ -11,11 +11,9 @@ describe('blogs', () => {
   beforeEach(async () => {
     await Blog.deleteMany({})// Antes de los test elimina todas las notas del entorno de testing.
 
-    const blog1 = new Blog(initialBlogs[0])
-    await blog1.save()
-
-    const blog2 = new Blog(initialBlogs[1])
-    await blog2.save()
+    const blogsObject = initialBlogs.map(blog => new Blog(blog))
+    const promises = blogsObject.map(blog => blog.save())
+    await Promise.all(promises)// Si es importante que el orden de los elementos se respete habría que recurrir a un for of en lugar de al Promise.all()
   })
 
   test('are returned as json, got 200', async () => {
@@ -24,19 +22,21 @@ describe('blogs', () => {
       .expect('Content-Type', /application\/json/)
   })
 
-  test('are two', async () => {
+  test('all in database', async () => {
     const { response } = await getFromBlogs()
-    expect(response.body).toHaveLength(initialBlogs.length - 1)
+    expect(response.body).toHaveLength(initialBlogs.length)
   })
 
   test(`contains title "${initialBlogs[0].title}"`, async () => {
-    const titles = (await getFromBlogs()).titles()
+    const response = await getFromBlogs()
+    const titles = response.titles()
 
     expect(titles).toContain(`${initialBlogs[0].title}`)
   })
 
   test(`contains author "${initialBlogs[1].author}"`, async () => {
-    const authors = (await getFromBlogs()).authors()
+    const response = await getFromBlogs()
+    const authors = response.authors()
 
     expect(authors).toContain(`${initialBlogs[1].author}`)
   })
@@ -50,10 +50,11 @@ describe('blogs', () => {
       .expect(200)
       .expect('Content-Type', /application\/json/)
 
-    const bodies = (await getFromBlogs()).bodies()
+    const response = await getFromBlogs()
+    const bodies = response.bodies()
 
     expect(bodies).toContain(newBlog.body)
-    expect(bodies).toHaveLength(3)
+    expect(bodies).toHaveLength(initialBlogs.length + 1)
   })
 
   test('returns 400 with an invalid blog', async () => {
@@ -69,8 +70,39 @@ describe('blogs', () => {
       .expect({ error: 'Something is missing' })
   })
 
-  afterAll(() => {
-    mongoose.connection.close()
-    server.close()
+  test('properly remove an existing blog', async () => {
+    const response = await getFromBlogs()
+    const ids = response.ids()
+    const firstId = ids[0]
+
+    await api
+      .delete(`/blogs/${firstId}`)
+      .expect(204)
+
+    const newResponse = await getFromBlogs()
+    const newIds = newResponse.ids()
+
+    expect(newIds).toHaveLength(ids.length - 1)
+    expect(newIds).not.toContain(firstId)
+  })
+
+  test('handles the attempt to remove a non-existent blog', async () => {
+    const response = await getFromBlogs()
+    const ids = response.ids()
+
+    await api
+      .delete('/blogs/not-an-id')
+      .expect(400)
+      .expect({ error: 'Used id is malformed' })
+
+    const newResponse = await getFromBlogs()
+    const newIds = newResponse.ids()
+
+    expect(newIds).toHaveLength(ids.length)
+  })
+
+  afterAll(async () => {
+    await mongoose.connection.close()
+    await server.close()
   })
 })

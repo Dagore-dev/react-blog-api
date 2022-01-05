@@ -18,14 +18,9 @@ app.get('/', (request, response) => {
   response.send('<h1>Hello world</h1>')
 })
 
-app.get('/blogs', (request, response) => {
-  Blog.find({})
-    .then(blogs => {
-      response.json(blogs)
-    })
-    .catch(err => {
-      console.error(err)
-    })
+app.get('/blogs', async (request, response) => {
+  const blogs = await Blog.find({})
+  response.json(blogs)
 })
 
 app.get('/blogs/:id', (request, response, next) => {
@@ -44,18 +39,18 @@ app.get('/blogs/:id', (request, response, next) => {
     })
 })
 
-app.delete('/blogs/:id', (request, response, next) => {
+app.delete('/blogs/:id', async (request, response, next) => {
   const { id } = request.params
-  Blog.findByIdAndDelete(id)
-    .then(() => {
-      response.status(204).end()
-    })
-    .catch(err => {
-      next(err)
-    })
+
+  try {
+    await Blog.findByIdAndDelete(id)
+    response.status(204).end()
+  } catch (err) {
+    next(err)
+  }
 })
 
-app.post('/blogs', (request, response) => {
+app.post('/blogs', async (request, response, next) => {
   const blog = request.body
 
   if (blog.title && blog.body && blog.author) {
@@ -65,13 +60,12 @@ app.post('/blogs', (request, response) => {
       author: blog.author
     })
 
-    newBlog.save()
-      .then(savedBlog => {
-        response.json(savedBlog)
-      })
-      .catch(err => {
-        console.error(err)
-      })
+    try {
+      const savedBlog = await newBlog.save()
+      response.json(savedBlog)
+    } catch (err) {
+      next(err)
+    }
   } else {
     response.status(400).json({
       error: 'Something is missing'
