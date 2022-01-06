@@ -1,6 +1,6 @@
-const { server } = require('../../index')
+const { app } = require('../../index')
 const supertest = require('supertest')
-const api = supertest(server)
+const api = supertest(app)
 
 async function getFromBlogs () {
   const response = await api.get('/blogs')

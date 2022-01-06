@@ -1,4 +1,3 @@
-const { server } = require('../index')
 const mongoose = require('mongoose')
 const Blog = require('../models/Blog')
 const initialBlogs = require('./helpers/initialsBlogs')
@@ -17,7 +16,7 @@ describe('blogs', () => {
   })
 
   test('are returned as json, got 200', async () => {
-    api.get('/blogs')
+    await api.get('/blogs')
       .expect(200)
       .expect('Content-Type', /application\/json/)
   })
@@ -103,6 +102,5 @@ describe('blogs', () => {
 
   afterAll(async () => {
     await mongoose.connection.close()
-    await server.close()
   })
 })

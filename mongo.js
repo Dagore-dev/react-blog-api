@@ -5,10 +5,7 @@ const connectionString = NODE_ENV === 'test'
   : MONGO_DB_URI// Una base de datos para los test y otra para producción/desarrollo. SOLUCIÓN NO DEFINITIVA
 
 // Conexión a mongoDB
-mongoose.connect(connectionString, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
+mongoose.connect(connectionString)
   .then(() => {
     console.log('Connected to mongoDB')
   })

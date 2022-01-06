@@ -4,6 +4,10 @@ const blogSchema = new Schema({
   title: String,
   body: String,
   author: String
+/*  author: {
+    type: Schema.Types.ObjectId,
+    ref: 'User'
+  } */
 })
 
 // Transforma la respuesta que recibimos eliminado o renombrando las propiedades del objeto
