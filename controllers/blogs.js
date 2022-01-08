@@ -1,5 +1,6 @@
 const blogsRouter = require('express').Router()
 const Blog = require('../models/Blog')
+const User = require('../models/User')
 
 blogsRouter.get('/', async (request, response) => {
   const blogs = await Blog.find({})
@@ -34,13 +35,15 @@ blogsRouter.delete('/:id', async (request, response, next) => {
 })
 
 blogsRouter.post('/', async (request, response, next) => {
-  const blog = request.body
+  const { title, body, author } = request.body
 
-  if (blog.title && blog.body && blog.author) {
+  if (title && body && author) {
+    const user = await User.find({ id: author })
+
     const newBlog = new Blog({
-      title: blog.title,
-      body: blog.body,
-      author: blog.author
+      title,
+      body,
+      author: user._id
     })
 
     try {
@@ -58,12 +61,12 @@ blogsRouter.post('/', async (request, response, next) => {
 
 blogsRouter.put('/:id', (request, response, next) => {
   const { id } = request.params
-  const blog = request.body
+  const { title, body, author } = request.body
 
   const newBlogContent = {
-    title: blog.title,
-    body: blog.body,
-    author: blog.author
+    title: title,
+    body: body,
+    author: author
   }
 
   Blog.findByIdAndUpdate(id, newBlogContent, { new: true })

@@ -2,6 +2,16 @@ POST http://localhost:3001/users
 Content-Type: application/json
 
 {
+    "username": "David",
+    "name": "David",
+    "password": "123123"
+}
+
+### Error, expected `username` to be unique.
+POST http://localhost:3001/users
+Content-Type: application/json
+
+{
     "username": "Dagore",
     "name": "David",
     "password": "123123"

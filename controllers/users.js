@@ -18,9 +18,31 @@ usersRouter.post('/', async (request, response) => { // la ruta que se tiene que
     passwordHash
   })
 
-  const savedUser = await user.save()
+  try {
+    const savedUser = await user.save()
+    response.status(201).json(savedUser)
+  } catch (err) {
+    response.json(err)
+  }
+})
 
-  response.json(savedUser)
+usersRouter.put('/:id', async (request, response, next) => {
+  const id = request.params.id
+  const { username, name, blogs } = request.body
+
+  const newUserInfo = {
+    username,
+    name,
+    blogs
+  }
+
+  User.findByIdAndUpdate(id, newUserInfo, { new: true })
+    .then(user => {
+      response.json(user)
+    })
+    .catch(err => {
+      next(err)
+    })
 })
 
 module.exports = usersRouter
